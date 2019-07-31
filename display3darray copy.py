@@ -41,9 +41,9 @@ class plotter:
 def slice_show(im, i=0):
     plotter(im, i)
 
-liverData, liverHeader = nrrd.read("./myTestLiverCube.nrrd")
-roiData, roiHeader =  nrrd.read("./myROI_LIVER.nrrd")
+liverData, liverHeader = nrrd.read("./myTestLiverCube2.nrrd")
+roiData, roiHeader =  nrrd.read("./myROI_LIVER2.nrrd")
 
-# plotter(np.multiply(liverData,roiData), 50)
-plotter(roiData, 50)
+plotter(np.multiply(liverData,roiData), 50)
+# plotter(roiData, 50)
 # plotter(liverData, 50)

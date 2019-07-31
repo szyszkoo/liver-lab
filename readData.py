@@ -24,6 +24,7 @@ rtFILE = './data/1_Case.RTSTRUCT.J_BRZUSZNA_P_wa.5.0.2019.03.11.22.05.49.698.730
 # rtFILE = "/Users/dborys/testdocker/PvS/101641/1.2.840.113704.1.111.2490.7469565.4/1.3.46.670589.50.66692958234174.21888.1554294295074.2/1.3.46.670589.50.66692958234174.21888.1554294295074.dcm"
 # rtFILE="/Users/dborys/Documents/POLSL/_PROJEKTY/2019_SIEMENS_LIVER/Polsl_t1/1_Case.RTSTRUCT.J_BRZUSZNA_P_wa.5.0.2019.03.11.22.05.49.698.73069853.dcm"
 paramsArray=[]
+testTupleArray=[]
 
 readdata, header = nrrd.read("./myROI_LIVER.nrrd")
 liverDataCube = np.zeros((320, 260, 96), dtype=int)
@@ -37,33 +38,37 @@ for filename in sorted(os.listdir(pathIN)):
         dataset = pydicom.dcmread(os.path.join(pathIN, filename))
 
         if dataset.Modality == "MR" and dataset.SeriesDescription == 't1_vibe_e-dixon_tra_p4_bh_W':
-            print(filename)
             if 'PixelData' in dataset:
+                testTupleArray.append((dataset.ImagePositionPatient, np.transpose(dataset.pixel_array)))
                 rows = int(dataset.Rows)
                 cols = int(dataset.Columns)
-                print("Image size.......: {rows:d} x {cols:d}, {size:d} bytes".format(
-                   rows=rows, cols=cols, size=len(dataset.PixelData)))
+                # print("Image size.......: {rows:d} x {cols:d}, {size:d} bytes".format(
+                #    rows=rows, cols=cols, size=len(dataset.PixelData)))
 
-                liverDataCube[:,:,i] = np.transpose(dataset.pixel_array)
-                i = i+1
+                # liverDataCube[:,:,i] = np.transpose(dataset.pixel_array)
+                # i = i+1
                 if 'PixelSpacing' in dataset:
                     dcm_pixel_spacing = dataset.PixelSpacing
-                    print("Pixel spacing....:", dataset.PixelSpacing)
-                if 'ImagePositionPatient' in dataset:
-                    dcm_patient_position = dataset.ImagePositionPatient
-                    print("ImagePositionPatient....:", dataset.ImagePositionPatient)
+                #     print("Pixel spacing....:", dataset.PixelSpacing)
+                # if 'ImagePositionPatient' in dataset:
+                #     dcm_patient_position = dataset.ImagePositionPatient
+                #     print("ImagePositionPatient....:", dataset.ImagePositionPatient)
 
-                paramsArray.append(dataset.ImagePositionPatient)
+                # paramsArray.append(dataset.ImagePositionPatient)
 
-        # else:
-        #     plt.plot(dataset.PixelData) 
+paramsArray = sorted(np.asarray(paramsArray), key = lambda x: x[2])
+test = sorted(testTupleArray, key = lambda x: x[0][2])
+paramsArray = [x[0] for x in test]
 
-nrrd.write('myTestLiverCube.nrrd', liverDataCube)
-print(paramsArray)
+for index, singleTuple in enumerate(test):
+    liverDataCube[:,:,index] = singleTuple[1]
+# liverDataCube = [x[1] for x in test]
+print(type(paramsArray))
 paramsArray = np.asarray(paramsArray)
+# nrrd.write('myTestLiverCube2.nrrd', liverDataCube)
+
 rt_file = pydicom.read_file(rtFILE, force=True)
 dcm_size = [rows, cols]
-
 #ds.dir("contour")['ROIContourSequence']
 contours = rt_file.ROIContourSequence
 
@@ -96,7 +101,7 @@ for structure in dicom_RT_seq:
                 if len(np.unique(z_location)) == 1:
                     #print np.unique(z_location)
                     # Find slice location in numpy 3d matrix using data from paramsArray
-                    itemindex = np.where(paramsArray[:,2] == z_location[0])
+                    # itemindex = np.where(paramsArray[:,2] == z_location[0])
 
                     aa = np.around(paramsArray[:, 2], decimals=1)
                     aa = np.transpose(aa)
@@ -151,7 +156,7 @@ for structure in dicom_RT_seq:
                 # else:
                     # print "Skipping Contour ...."
             # Create ROI nrd file
-            nrrd.write('myROI_' + structure.ROIName + '.nrrd', roi_mask.astype(int)*255)
+            nrrd.write('myROI_' + structure.ROIName + '2.nrrd', roi_mask.astype(int)*255)
 
 
 
