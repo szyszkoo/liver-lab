@@ -1,4 +1,4 @@
-import pylab
+import matplotlib.pyplot as plt
 import nrrd
 import numpy as np
 
@@ -8,10 +8,10 @@ class plotter:
         self.i = i
         self.vmin = im.min()
         self.vmax = im.max()
-        self.fig = pylab.figure()
-        pylab.gray()
+        self.fig = plt.figure()
+        plt.gray()
         self.ax = self.fig.add_subplot(111)
-        self.fig.canvas.mpl_connect('key_press_event', self.test)
+        self.fig.canvas.mpl_connect('key_release_event', self)
         self.draw()
 
     def draw(self):
@@ -23,10 +23,12 @@ class plotter:
 
         if len(self.ax.images) > 0:
             self.ax.images.pop()
-        self.ax.imshow(im, vmin=self.vmin, vmax=self.vmax, interpolation=None)
-        pylab.show()
+        self.ax.imshow(np.flip(np.rot90(im,k=3)))  
+        # TODO: fix the maximum recursion depth exceeded in comparison issue
+        plt.pause(0.1) 
+        plt.show()
 
-    def test(self, event):
+    def __call__(self, event):
         old_i = self.i
         if event.key=='right':
             self.i = min(self.im.shape[2]-1, self.i+1)
@@ -34,12 +36,13 @@ class plotter:
             self.i = max(0, self.i-1)
         if old_i != self.i:
             self.draw()
-            self.fig.canvas.draw()
 
 def slice_show(im, i=0):
     plotter(im, i)
 
-liverData, liverHeader = nrrd.read("./myTestLiverCube.nrrd")
-roiData, roiHeader =  nrrd.read("./myROI_LIVER.nrrd")
+liverData, liverHeader = nrrd.read("./myTestLiverCube2.nrrd")
+roiData, roiHeader =  nrrd.read("./myROI_LIVER2.nrrd")
 
 plotter(np.multiply(liverData,roiData), 50)
+# plotter(roiData, 50)
+# plotter(liverData, 50)
