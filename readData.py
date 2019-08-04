@@ -1,16 +1,8 @@
 import pydicom
 import nrrd
-import math
 import os
-import csv
-import matplotlib
-matplotlib.use('TkAgg') #Fix for MacOS framework bullsh*t
 import numpy as np
-import matplotlib.pyplot as plt
 from matplotlib.path import Path
-from mpl_toolkits import mplot3d
-from pyevtk.hl import gridToVTK
-import pylab
 
 pathIN = "./data"
 rtFILE = './data/1_Case.RTSTRUCT.J_BRZUSZNA_P_wa.5.0.2019.03.11.22.05.49.698.73069853.dcm'
