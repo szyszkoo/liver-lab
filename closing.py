@@ -31,10 +31,13 @@ closedRoi = np.zeros((320, 260, 96), dtype=int)
 #        [1, 1, 1, 1, 1],
 #        [0, 0, 1, 0, 0]], dtype=bool)
 
+<<<<<<< HEAD
 # mask = ndimage.generate_binary_structure(2, 1)
 mask = np.array([[1,0,1],
         [0,1,0],
         [1,0,1]], dtype=bool)
+
+>>>>>>> develop
 mask = ndimage.iterate_structure(mask, 10)
 
 while index < 95:
@@ -59,12 +62,18 @@ while index < 95:
 # plt.imshow(mask)
 
 # plt.show()
+<<<<<<< HEAD
 liverDataClosed = np.multiply(closedRoi, roiData)
 # plotter(closedRoi, 43)
+=======
+# liverDataClosed = np.multiply(closedLiver, roiData)
+plotter(closedRoi, 43)
+>>>>>>> develop
 
 # K Means clustering 
 # testSlice = liverDataClosed[..., 63] # just for the testing purposes
 
+<<<<<<< HEAD
 kmeans = KMeans(n_clusters=3)
 # Fitting the input data
 kmeans = kmeans.fit(np.reshape(liverDataClosed,[1,-1] ))
@@ -73,3 +82,13 @@ labels = kmeans.predict(liverDataClosed)
 # Centroid values
 centroids = kmeans.cluster_centers_
 plt.imshow(labels)
+=======
+# kmeans = KMeans(n_clusters=3)
+# # Fitting the input data
+# kmeans = kmeans.fit(liverDataClosed)
+# # Getting the cluster labels
+# labels = kmeans.predict(liverDataClosed)
+# # Centroid values
+# centroids = kmeans.cluster_centers_
+# plt.imshow(labels)
+>>>>>>> develop
