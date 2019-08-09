@@ -88,7 +88,7 @@ for structure in dicom_RT_seq:
                     roi_mask[:, :, int(iteindex)] = np.ma.mask_or(roi_mask[:, :, int(iteindex)], mask.reshape(height, width))
                 
 # TODO: Create ROI nrrd file (uncomment the line below)
-# nrrd.write('myROI_' + structure.ROIName + '2.nrrd', roi_mask.astype(int)*255)
+nrrd.write('myROI_' + structure.ROIName + '2.nrrd', roi_mask.astype(int)*255)
 print(roi_mask.astype(int)*255)
 
 
