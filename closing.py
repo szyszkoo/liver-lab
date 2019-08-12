@@ -7,7 +7,7 @@ from sklearn.cluster import KMeans
 from scipy import ndimage
 
 
-# liverData, liverHeader = nrrd.read("./myTestLiverCube2.nrrd")
+liverData, liverHeader = nrrd.read("./myTestLiverCube2.nrrd")
 roiData, roiHeader =  nrrd.read("./myROI_LIVER2.nrrd")
 roiData = np.asarray(roiData).astype(bool)
 # liver = np.multiply(liverData, roiData)
@@ -32,22 +32,22 @@ closedRoi = np.zeros((320, 260, 96), dtype=int)
 #        [0, 0, 1, 0, 0]], dtype=bool)
 
 # mask = ndimage.generate_binary_structure(2, 1)
-mask = np.array([[1,0,1],
-        [0,1,0],
-        [1,0,1]], dtype=bool)
-mask = ndimage.iterate_structure(mask, 10)
 
-while index < 95:
-    closedSlice = binary_closing(roiData[..., index], selem=mask)
-    binary_closing(closedSlice, selem=mask, out=closedSlice)
-    binary_closing(closedSlice, selem=mask, out=closedSlice)
-    binary_closing(closedSlice, selem=mask, out=closedSlice)
-    binary_closing(closedSlice, selem=mask, out=closedSlice)
-    binary_closing(closedSlice, selem=mask, out=closedSlice)
+# mask = np.array([[1,0,1],
+#         [0,1,0],
+#         [1,0,1]], dtype=bool)
+# mask = ndimage.iterate_structure(mask, 10)
 
-    closedRoi[..., index] = closedSlice
-    index = index + 1
+# while index < 95:
+#     closedSlice = binary_closing(roiData[..., index], selem=mask)
+#     binary_closing(closedSlice, selem=mask, out=closedSlice)
+#     binary_closing(closedSlice, selem=mask, out=closedSlice)
+#     binary_closing(closedSlice, selem=mask, out=closedSlice)
+#     binary_closing(closedSlice, selem=mask, out=closedSlice)
+#     binary_closing(closedSlice, selem=mask, out=closedSlice)
 
+#     closedRoi[..., index] = closedSlice
+#     index = index + 1
 
 
 
@@ -59,7 +59,7 @@ while index < 95:
 # plt.imshow(mask)
 
 # plt.show()
-liverDataClosed = np.multiply(closedRoi, roiData)
+liverDataClosed = (np.multiply(roiData, liverData)).reshape(3, -1)
 # plotter(closedRoi, 43)
 
 # K Means clustering 
@@ -67,9 +67,15 @@ liverDataClosed = np.multiply(closedRoi, roiData)
 
 kmeans = KMeans(n_clusters=3)
 # Fitting the input data
-kmeans = kmeans.fit(np.reshape(liverDataClosed,[1,-1] ))
+kmeans = kmeans.fit(liverDataClosed)
 # Getting the cluster labels
 labels = kmeans.predict(liverDataClosed)
 # Centroid values
 centroids = kmeans.cluster_centers_
+
+print(centroids)
+print(centroids.shape)
+# plt.scatter(df['x'], df['y'], c= kmeans.labels_.astype(float), s=50, alpha=0.5)
+plt.scatter(centroids[:, 0], centroids[:, 1], c='red', s=50)
+plt.show()
 plt.imshow(labels)
