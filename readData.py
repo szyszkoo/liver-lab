@@ -4,16 +4,17 @@ import os
 import numpy as np
 from matplotlib.path import Path
 
-pathIN = "./data"
-rtFILE = './data/1_Case.RTSTRUCT.J_BRZUSZNA_P_wa.5.0.2019.03.11.22.05.49.698.73069853.dcm'
+pathIN = "./data/S015"
+rtFileName = ""
 
 liverDataTuple = []
-# TODO: Get rid of the hardcoded values below
-liverDataCube = np.zeros((320, 260, 96), dtype=int)
 
 for filename in sorted(os.listdir(pathIN)):
     if filename.endswith(".dcm"):
         dataset = pydicom.dcmread(os.path.join(pathIN, filename))
+
+        if "ROIContourSequence" in dataset:
+            rtFileName = pathIN + "/" + filename
 
         if dataset.Modality == "MR" and dataset.SeriesDescription == 't1_vibe_e-dixon_tra_p4_bh_W':
             if 'PixelData' in dataset:
@@ -26,15 +27,18 @@ for filename in sorted(os.listdir(pathIN)):
               
 liverDataSorted = sorted(liverDataTuple, key = lambda x: x[0][2])
 patientPositionArray = np.asarray([x[0] for x in liverDataSorted])
+liverDataCube = np.zeros((cols, rows, len(liverDataSorted)), dtype=int)
 
 for index, singleTuple in enumerate(liverDataSorted):
     liverDataCube[:,:,index] = singleTuple[1]
 
 # TODO: uncomment the line below in order to save the liver data to the nrrd file
-# nrrd.write('myTestLiverCube2.nrrd', liverDataCube)
+nrrd.write('liverCube15.nrrd', liverDataCube)
 
 # RT file (ROI)
-rt_file = pydicom.read_file(rtFILE, force=True)
+if rtFileName == "":
+    raise Exception("The RT structure name is empty.")
+rt_file = pydicom.read_file(rtFileName, force=True)
 dcm_size = [rows, cols]
 contours = rt_file.ROIContourSequence
 dicom_RT_seq = rt_file.StructureSetROISequence
@@ -63,7 +67,8 @@ for structure in dicom_RT_seq:
                     # Find slice location in numpy 3d matrix using data from patientPositionArray
                     aa = np.around(patientPositionArray[:, 2], decimals=1)
                     aa = np.transpose(aa)
-                    itemindex = np.where(aa == z_location[0])
+                    itemindex = np.where(np.absolute(aa - z_location[0]) < 1)
+                    # itemindex = aa[np.absolute(aa - z_location[0]) < 1]
 
                     iteindex = itemindex[0][0]
 
@@ -84,12 +89,8 @@ for structure in dicom_RT_seq:
 
                     mask = poly_path.contains_points(coors)
 
-                    # Insert mask on index with AND operation
+                    # Insert mask on index with OR operation
                     roi_mask[:, :, int(iteindex)] = np.ma.mask_or(roi_mask[:, :, int(iteindex)], mask.reshape(height, width))
                 
 # TODO: Create ROI nrrd file (uncomment the line below)
-nrrd.write('myROI_' + structure.ROIName + '2.nrrd', roi_mask.astype(int)*255)
-print(roi_mask.astype(int)*255)
-
-
-
+nrrd.write('ROI' + structure.ROIName + '15.nrrd', roi_mask.astype(int)*255)
