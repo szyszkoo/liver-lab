@@ -2,7 +2,7 @@ import nrrd
 import numpy as np
 import matplotlib.pyplot as plt
 from skimage.morphology import binary_closing
-from displaySlices import Plotter
+from plotter import Plotter
 from sklearn.cluster import KMeans
 from scipy import ndimage
 from fileNames import FileNames

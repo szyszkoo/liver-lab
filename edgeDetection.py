@@ -2,7 +2,7 @@ from skimage.filters import roberts, sobel
 import numpy as np
 import matplotlib.pyplot as plt
 import nrrd
-from displaySlices import Plotter
+from plotter import Plotter
 from fileNames import FileNames
 
 sampleNumber = "01"
