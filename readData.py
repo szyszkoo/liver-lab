@@ -3,8 +3,11 @@ import nrrd
 import os
 import numpy as np
 from matplotlib.path import Path
+from fileNames import FileNames
 
-pathIN = "./data/S015"
+fileNames = FileNames()
+sampleNumber = "15"
+pathIN = "./data/S0" + sampleNumber
 rtFileName = ""
 
 liverDataTuple = []
@@ -33,7 +36,7 @@ for index, singleTuple in enumerate(liverDataSorted):
     liverDataCube[:,:,index] = singleTuple[1]
 
 # TODO: uncomment the line below in order to save the liver data to the nrrd file
-nrrd.write('liverCube15.nrrd', liverDataCube)
+nrrd.write(fileNames.getLiverCubeFileName(sampleNumber), liverDataCube)
 
 # RT file (ROI)
 if rtFileName == "":
@@ -93,4 +96,4 @@ for structure in dicom_RT_seq:
                     roi_mask[:, :, int(iteindex)] = np.ma.mask_or(roi_mask[:, :, int(iteindex)], mask.reshape(height, width))
                 
 # TODO: Create ROI nrrd file (uncomment the line below)
-nrrd.write('ROI' + structure.ROIName + '15.nrrd', roi_mask.astype(int)*255)
+nrrd.write(fileNames.getRoiCubeFileName(sampleNumber), roi_mask.astype(int)*255)

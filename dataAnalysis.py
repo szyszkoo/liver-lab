@@ -2,9 +2,13 @@ import nrrd
 import numpy as np
 import matplotlib.pyplot as plt
 from skimage.morphology import closing
+from fileNames import FileNames
 
-liverData, liverHeader = nrrd.read("./myTestLiverCube2.nrrd")
-roiData, roiHeader =  nrrd.read("./myROI_LIVER2.nrrd")
+sampleNumber = "01"
+fileNames = FileNames()
+
+liverData, liverHeader = nrrd.read(fileNames.getLiverCubeFileName(sampleNumber))
+roiData, roiHeader =  nrrd.read(fileNames.getRoiCubeFileName(sampleNumber))
 roiData = roiData/255
 liver = np.multiply(liverData, roiData)
 
@@ -16,7 +20,7 @@ histogram = np.histogram(test)
 
 # An "interface" to matplotlib.axes.Axes.hist() method
 n, bins, patches = plt.hist(x=test, bins=np.arange(0, 512, 1), color='#0504aa',
-                            alpha=0.7, rwidth=0.85)
+                            alpha=0.7, rwidth=1)
 plt.grid(axis='y', alpha=0.75)
 plt.xlabel('Value')
 plt.ylabel('Frequency')
