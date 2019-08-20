@@ -2,20 +2,19 @@ from skimage.filters import roberts, sobel
 import numpy as np
 import matplotlib.pyplot as plt
 import nrrd
-from displaySlices import plotter
+from displaySlices import Plotter
+from fileNames import FileNames
 
-liverData, liverHeader = nrrd.read("./liverCube01.nrrd")
-roiData, roiHeader =  nrrd.read("./ROILIVER01.nrrd")
+sampleNumber = "01"
+fileNames = FileNames()
+
+liverData, liverHeader = nrrd.read(fileNames.getLiverCubeFileName(sampleNumber))
+roiData, roiHeader =  nrrd.read(fileNames.getRoiCubeFileName(sampleNumber))
 roiData = roiData/255
 liver = np.multiply(liverData, roiData)
-singleSlice = liver[:,:,50]
-liverEdges = np.zeros((liver.shape[0], liver.shape[1], liver.shape[2]), dtype=int)
-test= np.rollaxis(liver,2)
-
+liverEdges = np.zeros(liver.shape, dtype=int)
 
 for index, singleSlice in enumerate(np.rollaxis(liver, 2)):
-    liverEdges[:,:, index] = sobel(singleSlice)
-# plt.imshow(sobel(singleSlice))
+    liverEdges[..., index] = sobel(singleSlice)
     
-# plt.show()
-plotter(liverEdges, 50)
+Plotter(liverEdges, liver, 50)

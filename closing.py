@@ -2,13 +2,16 @@ import nrrd
 import numpy as np
 import matplotlib.pyplot as plt
 from skimage.morphology import binary_closing
-from displaySlices import plotter
+from displaySlices import Plotter
 from sklearn.cluster import KMeans
 from scipy import ndimage
+from fileNames import FileNames
 
+sampleNumber = "01"
+fileNames = FileNames()
 
-liverData, liverHeader = nrrd.read("./myTestLiverCube2.nrrd")
-roiData, roiHeader =  nrrd.read("./myROI_LIVER2.nrrd")
+liverData, liverHeader = nrrd.read(fileNames.getLiverCubeFileName(sampleNumber))
+roiData, roiHeader =  nrrd.read(fileNames.getRoiCubeFileName(sampleNumber))
 roiData = np.asarray(roiData).astype(bool)
 # liver = np.multiply(liverData, roiData)
 
