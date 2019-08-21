@@ -2,24 +2,20 @@ import nrrd
 import numpy as np
 import matplotlib.pyplot as plt
 from skimage.morphology import closing
-from fileNames import FileNames
+from liverDataUtils.liverReader import LiverReader
 
 sampleNumber = "01"
-fileNames = FileNames()
+liverReader = LiverReader()
+liver = liverReader.readLiverData(sampleNumber)
 
-liverData, liverHeader = nrrd.read(fileNames.getLiverCubeFileName(sampleNumber))
-roiData, roiHeader =  nrrd.read(fileNames.getRoiCubeFileName(sampleNumber))
-roiData = roiData/255
-liver = np.multiply(liverData, roiData)
-
-test = np.ravel(liver)
-test = [x for x in test if x != 0] # can be changed to only select the pixels inside the ROI 
+liverVector = np.ravel(liver)
+liverVector = [x for x in liverVector if x != 0] # can be changed to only select the pixels inside the ROI 
 # to avoid losing the 0s inside the ROI
 
-histogram = np.histogram(test)
+histogram = np.histogram(liverVector)
 
 # An "interface" to matplotlib.axes.Axes.hist() method
-n, bins, patches = plt.hist(x=test, bins=np.arange(0, 512, 1), color='#0504aa',
+n, bins, patches = plt.hist(x=liverVector, bins=np.arange(0, 512, 1), color='#0504aa',
                             alpha=0.7, rwidth=1)
 plt.grid(axis='y', alpha=0.75)
 plt.xlabel('Value')
@@ -30,6 +26,6 @@ maxfreq = n.max()
 plt.ylim(ymax=np.ceil(maxfreq / 10) * 10 if maxfreq % 10 else maxfreq + 10)
 plt.show()
 
-print(np.amax(test))
-print(np.amin(test))
+print(np.amax(liverVector))
+print(np.amin(liverVector))
 
