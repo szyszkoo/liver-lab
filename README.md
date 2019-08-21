@@ -4,7 +4,7 @@
 // TODO
 
 ## Environment setup 
-1. Clone the repo, preferable using the following command
+1. Clone the repo, preferably using the following command
 ```
 git clone <webUrlOfTheRepo>
 ```
