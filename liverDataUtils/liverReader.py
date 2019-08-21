@@ -1,6 +1,9 @@
+import pydicom
 import nrrd
+import os
 import numpy as np
-from fileNames import FileNames
+from matplotlib.path import Path
+from liverDataUtils.fileNames import FileNames
 
 class LiverReader:
     def readLiverData(self, sampleNumber):

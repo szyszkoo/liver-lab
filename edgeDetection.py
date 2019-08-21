@@ -1,20 +1,18 @@
-from skimage.filters import roberts, sobel
+from skimage.filters import roberts, sobel, frangi
 import numpy as np
 import matplotlib.pyplot as plt
 import nrrd
-from plotter import Plotter
-from fileNames import FileNames
+from liverDataUtils.plotter import Plotter
+from liverDataUtils.liverReader import LiverReader
 
 sampleNumber = "01"
-fileNames = FileNames()
+liverReader = LiverReader()
 
-liverData, liverHeader = nrrd.read(fileNames.getLiverCubeFileName(sampleNumber))
-roiData, roiHeader =  nrrd.read(fileNames.getRoiCubeFileName(sampleNumber))
-roiData = roiData/255
-liver = np.multiply(liverData, roiData)
+liver = liverReader.readLiverData(sampleNumber)
 liverEdges = np.zeros(liver.shape, dtype=int)
 
+# Frangi 
 for index, singleSlice in enumerate(np.rollaxis(liver, 2)):
-    liverEdges[..., index] = sobel(singleSlice)
+    liverEdges[..., index] = frangi(singleSlice) # not working yet - why? (black picture)
     
 Plotter(liverEdges, liver, 50)
