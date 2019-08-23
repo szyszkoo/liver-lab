@@ -1,30 +1,29 @@
 import numpy as np
-from scipy.interpolate import RegularGridInterpolator
 
+class CubeInterpolator:
+    def interpolateCube(self, dataCube, numSlices = 2):
+        """Adds additional layers between each existing z-position layer in the dataCube
 
-# config 
-numberOfSlicesToAdd = 2
+        Attributes:
+            numSlices     Number of slices to add between each slice of data in dataCube. Default value is 2.
+            dataCube    Data to which the additional slices will be added.
+        """
 
-# init
-elCuberinhoOriginale = np.zeros((3,3,3))
-elCuberinhoOriginale[...,0] = np.ones((3,3))
-elCuberinhoOriginale[...,1] = np.ones((3,3)) * 4
-elCuberinhoOriginale[...,2] = np.ones((3,3)) * 7
+        fullIterationNumber = numSlices + 1
+        originalShape = dataCube.shape
+        interpolatedSlicesNumber = originalShape[2] * 3 - 2
+        interpolatedDataCube = np.zeros(originalShape[0], originalShape[1], interpolatedSlicesNumber)
 
-elCuberinho = np.zeros((3,3,7))
+        for i in range(originalShape[0]):
+            for j in range(originalShape[1]):
+                for k in range(originalShape[2]):
+                    if (k % fullIterationNumber == 0):
+                        interpolatedDataCube[i,j,k] = dataCube[i, j, int(k/fullIterationNumber)]
+                        continue
 
-fullIterationNumber = numberOfSlicesToAdd + 1
+                    initialValue = dataCube[i, j, int(np.floor(k/fullIterationNumber))]
+                    endValue = dataCube[i, j, int(np.ceil(k/fullIterationNumber))]
 
-for i in range(elCuberinho.shape[0]):
-    for j in range(elCuberinho.shape[1]):
-        for k in range(elCuberinho.shape[2]):
-            if(k % fullIterationNumber == 0):
-                elCuberinho[i,j,k] = elCuberinhoOriginale[i, j, int(k/fullIterationNumber)]
-                continue
+                    interpolatedDataCube[i, j, k] = np.linspace(initialValue, endValue, numSlices + 2)[k % fullIterationNumber]
 
-            firstSlice = elCuberinhoOriginale[..., int(np.floor(k/fullIterationNumber))]
-            secondSlice = elCuberinhoOriginale[..., int(np.ceil(k/fullIterationNumber))]
-
-            elCuberinho[i,j,k] = np.linspace(firstSlice[i,j], secondSlice[i,j], numberOfSlicesToAdd + 2)[k % fullIterationNumber]
-
-print("elo")
+        return interpolatedDataCube
