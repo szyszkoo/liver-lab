@@ -1,5 +1,5 @@
 import numpy as np
-from src.liverDataUtils.cubeInterpolator import CubeInterpolator
+from liverDataUtils.cubeInterpolator import CubeInterpolator
 
 # given
 cubeInterpolator = CubeInterpolator()
@@ -10,9 +10,9 @@ z_ = np.linspace(10, 40, 11)
 _, _, z = np.meshgrid(x_, y_, z_, indexing='ij')
 
 # when
-myAwesomeInterpolatedCube = cubeInterpolator.interpolateCube(z)
+interpolatedCube = cubeInterpolator.interpolateCube(z)
 
 # then
-assert (myAwesomeInterpolatedCube[..., 0] == z[...,0]).all(), "First slice should remain the same"
-assert (myAwesomeInterpolatedCube[..., 11] != np.zeros((myAwesomeInterpolatedCube.shape[0], myAwesomeInterpolatedCube.shape[1]))).all(), "The first slice after the original slices number is just full of zeros"
-assert (myAwesomeInterpolatedCube[..., -1] == z[..., -1]).all(), "The first slice after the original slices number is just full of zeros"
+assert (interpolatedCube[..., 0] == z[...,0]).all(), "First slice should remain the same"
+assert (interpolatedCube[..., 11] != np.zeros((interpolatedCube.shape[0], interpolatedCube.shape[1]))).all(), "The first slice after the original slices number is just full of zeros"
+assert (interpolatedCube[..., -1] == z[..., -1]).all(), "The last slice is not the same as the original last one"

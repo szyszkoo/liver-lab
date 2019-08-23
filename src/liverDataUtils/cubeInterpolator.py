@@ -18,8 +18,7 @@ class CubeInterpolator:
             for j in range(originalShape[1]):
                 for k in range(interpolatedSlicesNumber):
                     if (k % fullIterationNumber == 0):
-                        print(k/fullIterationNumber)
-                        interpolatedDataCube[i,j,k] = dataCube[i, j, int(k/fullIterationNumber)]
+                        interpolatedDataCube[i, j, k] = dataCube[i, j, int(k/fullIterationNumber)]
                         continue
 
                     initialValue = dataCube[i, j, int(np.floor(k/fullIterationNumber))]
