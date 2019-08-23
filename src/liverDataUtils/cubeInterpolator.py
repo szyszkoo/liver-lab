@@ -12,12 +12,13 @@ class CubeInterpolator:
         fullIterationNumber = numSlices + 1
         originalShape = dataCube.shape
         interpolatedSlicesNumber = originalShape[2] * 3 - 2
-        interpolatedDataCube = np.zeros(originalShape[0], originalShape[1], interpolatedSlicesNumber)
+        interpolatedDataCube = np.zeros((originalShape[0], originalShape[1], interpolatedSlicesNumber))
 
         for i in range(originalShape[0]):
             for j in range(originalShape[1]):
-                for k in range(originalShape[2]):
+                for k in range(interpolatedSlicesNumber):
                     if (k % fullIterationNumber == 0):
+                        print(k/fullIterationNumber)
                         interpolatedDataCube[i,j,k] = dataCube[i, j, int(k/fullIterationNumber)]
                         continue
 
