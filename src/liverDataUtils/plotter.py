@@ -7,7 +7,7 @@ class Plotter:
         self.imageCube2 = imageCube2
         self.i = i
         self.fig = plt.figure()
-        plt.gray()
+        # plt.gray()
         self.ax1 = self.fig.add_subplot(121)
         self.ax2 = self.fig.add_subplot(122)
         self.fig.canvas.mpl_connect('key_release_event', self)
