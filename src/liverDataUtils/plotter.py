@@ -43,10 +43,3 @@ class Plotter:
             self.i = max(0, self.i-1)
         if old_i != self.i:
             self.draw()
-
-# liverData, liverHeader = nrrd.read("./liverCube02.nrrd")
-# roiData, roiHeader =  nrrd.read("./ROILIVER02.nrrd")
-
-# plotter(np.multiply(liverData,roiData), roiData/255)
-# plotter(roiData, 41)
-# plotter(liverData, 41)

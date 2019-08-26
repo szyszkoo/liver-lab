@@ -7,7 +7,7 @@ from fileNames import FileNames
 
 fileNames = FileNames()
 sampleNumber = "15"
-pathIN = "./data/S0" + sampleNumber
+pathIN =  os.getcwd() + os.path.join("/data/S0"+ sampleNumber)
 rtFileName = ""
 
 liverDataTuple = []
