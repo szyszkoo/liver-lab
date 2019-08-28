@@ -19,3 +19,10 @@ class LiverReader:
         liverData, _ = nrrd.read(fileNames.getInterpolatedCubeFileName(sampleNumber))
 
         return liverData
+
+    def readLiverROIData(self, sampleNumber):
+        fileNames = FileNames()
+        roiData, _ =  nrrd.read(fileNames.getRoiCubeFileName(sampleNumber))
+        roiData = roiData/255
+
+        return roiData
