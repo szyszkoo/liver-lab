@@ -13,12 +13,13 @@ fileNames = FileNames()
 cubeInterpolator = CubeInterpolator()
 regionGrowing = RegionGrowing()
 
-liverData = liverReader.readInterpolatedLiverData(sampleNumber)
-afterGauss = gaussian(liverData, sigma=0.5)
-regionGrowth = regionGrowing.grow(afterGauss, (107,136,142), 5)
+liverData = liverReader.readLiverData(sampleNumber)
+roi = liverReader.readLiverROIData(sampleNumber)
+# afterGauss = gaussian(liverData, sigma=0.5)
+# regionGrowth = regionGrowing.grow(afterGauss, (107,136,142), 5)
 # interpolated = cubeInterpolator.interpolateCube(liverData, 2)
 
-Plotter(afterGauss, regionGrowth, 164)
+Plotter(liverData, roi, 50)
 # nrrd.write(fileNames.getInterpolatedCubeFileName(sampleNumber), interpolated)
 
 
