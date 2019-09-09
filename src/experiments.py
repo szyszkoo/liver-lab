@@ -10,16 +10,16 @@ from skimage.filters import gaussian
 sampleNumber = "03"
 liverReader = LiverReader()
 fileNames = FileNames()
-cubeInterpolator = CubeInterpolator()
-regionGrowing = RegionGrowing()
+# cubeInterpolator = CubeInterpolator()
+# regionGrowing = RegionGrowing()
 
-liverData = liverReader.readLiverData(sampleNumber)
-roi = liverReader.readLiverROIData(sampleNumber)
+liverData = liverReader.readInterpolatedLiverData(sampleNumber)
+# roi = liverReader.readLiverROIData(sampleNumber)
 # afterGauss = gaussian(liverData, sigma=0.5)
 # regionGrowth = regionGrowing.grow(afterGauss, (107,136,142), 5)
 # interpolated = cubeInterpolator.interpolateCube(liverData, 2)
 
-Plotter(liverData, roi, 50)
+Plotter(liverData, liverData, 100)
 # nrrd.write(fileNames.getInterpolatedCubeFileName(sampleNumber), interpolated)
 
 
