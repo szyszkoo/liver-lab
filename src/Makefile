@@ -9,3 +9,6 @@ rgi:
 
 frangi: 
 	python -m frangi3DFilter
+
+regionGrowing:
+	python -m liverDataUtils.regionGrowing3D

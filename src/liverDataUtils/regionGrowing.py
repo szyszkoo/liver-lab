@@ -38,6 +38,20 @@ class RegionGrowing:
             kmin = max(pt[2]-t, 0)
             kmax = min(pt[2]+t, img.shape[2]-1)
 
+            # print("Aktualny punkt: ", pt)
+            # print("i min: ", imin)
+            # print("i max: ", imax)
+            # print("j min: ", jmin)
+            # print("j max: ", jmax)
+            # print("k min: ", kmin)
+            # print("k max: ", kmax)
+
+            # print("==============================================")
+
+            # print("Wartosc aktualnego piksela: ", img[pt])
+            # print("Wartosc srednia sasiedztwa: ", img[imin:imax+1, jmin:jmax+1, kmin:kmax+1].mean())
+            # print("==============================================")
+
             if img[pt] >= img[imin:imax+1, jmin:jmax+1, kmin:kmax+1].mean():
                 # Include the voxel in the segmentation and
                 # add its neighbors to be checked.
