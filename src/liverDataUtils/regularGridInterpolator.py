@@ -4,6 +4,9 @@ from liverDataUtils.fileNames import FileNames
 from liverDataUtils.liverReader import LiverReader
 from liverDataUtils.plotter import Plotter
 import nrrd
+import time 
+
+start_time = time.time()
 
 RGI = spint.RegularGridInterpolator
 
@@ -13,7 +16,7 @@ fileNames = FileNames()
 pixelSpacing = 1.1875 # x and y position
 sliceThickness = 3 # z position
 
-liverData = liverReader.readLiverData(sampleNumber)
+liverData = liverReader.readLiverROIData(sampleNumber)
 xDimension = int(np.ceil(liverData.shape[0] * pixelSpacing))
 yDimension = int(np.ceil(liverData.shape[1] * pixelSpacing))
 zDimension = int(np.ceil(liverData.shape[2] * sliceThickness))
@@ -23,11 +26,11 @@ y = np.linspace(1, liverData.shape[1], liverData.shape[1])
 z = np.linspace(1, liverData.shape[2], liverData.shape[2])
 
 rgi = RGI(points=[x,y,z], values=liverData)
-print(rgi((1.6842105263157894,1.6842105263157894,27.0)))
+# print(rgi((1.6842105263157894,1.6842105263157894,27.0)))
 interpolatedDataCube = np.zeros((int(np.ceil(xDimension)), int(np.ceil(yDimension)), int(np.ceil(zDimension))), dtype=int)
 
 for i in range(1, xDimension):
-    print(f"i was: {i}")
+    print(f"{i}/{xDimension}")
     for j in range(1, yDimension):
         for k in range(1, zDimension):
             iAdjusted = i/pixelSpacing
@@ -39,6 +42,6 @@ for i in range(1, xDimension):
             else:
                 pass # just to handle borders - they are all zeros anyway
 
-nrrd.write(fileNames.getInterpolatedCubeFileName(sampleNumber), interpolatedDataCube)
-
-Plotter(liverData, interpolatedDataCube)
+nrrd.write(fileNames.getInterpolatedRoiFileName(sampleNumber), interpolatedDataCube)
+print("------ Execution time: %s seconds ------" % (time.time() - start_time))
+# Plotter(liverData, interpolatedDataCube)
