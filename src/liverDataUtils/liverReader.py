@@ -26,3 +26,7 @@ class LiverReader:
         roiData = roiData/255
 
         return roiData
+
+    def readNrrdData(self, fileName):
+        data, _ = nrrd.read(fileName)
+        return data
