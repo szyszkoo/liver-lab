@@ -12,21 +12,21 @@ liverReader = LiverReader()
 fileNames = FileNames()
 regionGrowing = RegionGrowing()
 
+liverData = liverReader.readInterpolatedLiverData(sampleNumber)
 liverDataFrangi = liverReader.readNrrdData("testFrangi2D.nrrd")
 roi = liverReader.readInterpolatedLiverData("_03_roi")
 
 liverDataFrangi = np.multiply(liverDataFrangi, roi)
-regionMask = regionGrowing.grow(liverDataFrangi,(120,149,147), 5)
+# regionMask = regionGrowing.grow(liverDataFrangi,(129,179,150), 1)
 
 liverData = liverReader.readInterpolatedLiverData(sampleNumber)
-119-134,75,159
 print("Execution time [s]: ", time.time() - start_time)
 
-# regionMask[:,149,147] = 1
-# regionMask[120,:,147] = 1
+# regionMask[:,179,150] = 1
+# regionMask[129,:,150] = 1
 
-nrrd.write("testRegionGrowingMask_nbgh5.nrrd", regionMask.astype(int)*255)
+# nrrd.write("testRegionGrowingMask_nbgh5.nrrd", regionMask.astype(int)*255)
 
-plotter = Plotter(regionMask, liverDataFrangi, 150)
+plotter = Plotter(liverDataFrangi, liverData, 150)
 plotter.draw()
 

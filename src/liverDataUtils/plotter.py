@@ -29,8 +29,8 @@ class Plotter:
         if len(self.ax2.images) > 0:
             self.ax2.images.pop()
 
-        self.ax1.imshow(np.flip(np.rot90(image1, k=3)))  
-        self.ax2.imshow(np.flip(np.rot90(image2, k=3)))  
+        self.ax1.imshow(np.fliplr(np.rot90(image1, k=3)))  
+        self.ax2.imshow(np.fliplr(np.rot90(image2, k=3)))  
         # TODO: fix the maximum recursion depth exceeded in comparison issue
         plt.pause(0.1) 
         plt.show()
