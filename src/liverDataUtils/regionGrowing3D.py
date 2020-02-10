@@ -17,7 +17,7 @@ liverDataFrangi = liverReader.readNrrdData("testFrangi2D.nrrd")
 roi = liverReader.readInterpolatedLiverData("_03_roi")
 
 liverDataFrangi = np.multiply(liverDataFrangi, roi)
-# regionMask = regionGrowing.grow(liverDataFrangi,(129,179,150), 1)
+regionMask = regionGrowing.grow(liverDataFrangi,(129,179,150), 1)
 
 liverData = liverReader.readInterpolatedLiverData(sampleNumber)
 print("Execution time [s]: ", time.time() - start_time)

@@ -4,9 +4,9 @@ import matplotlib.pyplot as plt
 from skimage.morphology import closing
 from liverDataUtils.liverReader import LiverReader
 
-sampleNumber = "01"
+sampleNumber = "03"
 liverReader = LiverReader()
-liver = liverReader.readLiverData(sampleNumber)
+liver = liverReader.readInterpolatedLiverData(sampleNumber)
 
 liverVector = np.ravel(liver)
 liverVector = [x for x in liverVector if x != 0] # can be changed to only select the pixels inside the ROI 

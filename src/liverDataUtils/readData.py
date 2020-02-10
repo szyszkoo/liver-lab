@@ -7,7 +7,7 @@ from fileNames import FileNames
 
 fileNames = FileNames()
 sampleNumber = "15"
-pathIN =  os.getcwd() + os.path.join("/data/S0"+ sampleNumber)
+pathIN =  os.getcwd() + os.path.join("./../data/S0"+ sampleNumber)
 rtFileName = ""
 
 liverDataTuple = []
@@ -36,7 +36,7 @@ for index, singleTuple in enumerate(liverDataSorted):
     liverDataCube[:,:,index] = singleTuple[1]
 
 # TODO: uncomment the line below in order to save the liver data to the nrrd file
-nrrd.write(fileNames.getLiverCubeFileName(sampleNumber), liverDataCube)
+# nrrd.write(fileNames.getLiverCubeFileName(sampleNumber), liverDataCube)
 
 # RT file (ROI)
 if rtFileName == "":

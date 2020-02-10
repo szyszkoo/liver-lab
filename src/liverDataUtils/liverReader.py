@@ -14,11 +14,29 @@ class LiverReader:
 
         return np.multiply(liverData, roiData)
 
+    def readWholeLiverData(self, sampleNumber):
+        fileNames = FileNames()
+        liverData, _ = nrrd.read(fileNames.getLiverCubeFileName(sampleNumber))
+
+        return liverData
+
     def readInterpolatedLiverData(self, sampleNumber):
         fileNames = FileNames()
         liverData, _ = nrrd.read(fileNames.getInterpolatedCubeFileName(sampleNumber))
 
         return liverData
+
+    def readInterpolatedWholeData(self, sampleNumber):
+        fileNames = FileNames()
+        data, _ = nrrd.read(fileNames.getInterpolatedWholeDataFileName(sampleNumber))
+
+        return data
+
+    def readInterpolatedRoiData(self, sampleNumber):
+        fileNames = FileNames()
+        roiData, _ = nrrd.read(fileNames.getInterpolatedRoiFileName(sampleNumber))
+
+        return roiData
 
     def readLiverROIData(self, sampleNumber):
         fileNames = FileNames()
