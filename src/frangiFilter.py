@@ -19,11 +19,13 @@ from skimage.filters import frangi, hessian
 
 sampleNumber = "01"
 liverReader = LiverReader()
-liverData = liverReader.readLiverData(sampleNumber)
-roiData = liverReader.readLiverROIData(sampleNumber)
+# liverData = liverReader.readLiverData(sampleNumber)
+# roiData = liverReader.readLiverROIData(sampleNumber)
+liverData = liverReader.readNrrdData(f"nearest_interpolatedCube_{sampleNumber}.nrrd")
+roiData = liverReader.readNrrdData(f"nearest_interpolatedROIData_{sampleNumber}.nrrd")/255
 
 
-liver01 = liverData / np.max(liverData)  #normalised Liver
+# liver01 = liverData / np.max(liverData)  #normalised Liver
 
 livfrang = np.zeros((liverData.shape[0], liverData.shape[1], liverData.shape[2]), dtype=float)
 for index in np.arange(0, liverData.shape[2], 1):
