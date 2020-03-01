@@ -52,7 +52,7 @@ class RegionGrowing:
             # print("Wartosc srednia sasiedztwa: ", img[imin:imax+1, jmin:jmax+1, kmin:kmax+1].mean())
             # print("==============================================")
 
-            if img[currentPoint] <= (img[imin:imax+1, jmin:jmax+1, kmin:kmax+1].mean()*0.75):
+            if img[currentPoint] > (img[imin:imax+1, jmin:jmax+1, kmin:kmax+1].mean() * 1.5):
             # if img[currentPoint] == 255:
                 # Include the voxel in the segmentation and
                 # add its neighbors to be checked.

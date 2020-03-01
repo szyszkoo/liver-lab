@@ -16,11 +16,19 @@ class Plotter:
     def draw(self):
         if self.imageCube1.ndim is 2:
             image1 = self.imageCube1
+        if self.imageCube2.ndim is 2:
             image2 = self.imageCube2
         if self.imageCube1.ndim is 3:
             image1 = self.imageCube1[...,self.i]
-            image2 = self.imageCube2[...,self.i]
             self.ax1.set_title('slice {0}'.format(self.i))
+        if self.imageCube2.ndim is 3:
+            image2 = self.imageCube2[...,self.i]
+            self.ax2.set_title('slice {0}'.format(self.i))
+        if self.imageCube1.ndim is 4:
+            image1 = self.imageCube1[:,:,self.i,:]
+            self.ax1.set_title('slice {0}'.format(self.i))
+        if self.imageCube2.ndim is 4:
+            image2 = self.imageCube2[:,:,self.i,:]
             self.ax2.set_title('slice {0}'.format(self.i))
 
         if len(self.ax1.images) > 0:
