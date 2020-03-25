@@ -2,7 +2,7 @@ import numpy as np
 
 class RegionGrowing:
     
-    def grow(self, img, seed, t):
+    def grow(self, img, seed, sensitivity, t):
         """
         img: ndarray, ndim=3
             An image volume.
@@ -52,7 +52,7 @@ class RegionGrowing:
             # print("Wartosc srednia sasiedztwa: ", img[imin:imax+1, jmin:jmax+1, kmin:kmax+1].mean())
             # print("==============================================")
 
-            if img[currentPoint] > (img[imin:imax+1, jmin:jmax+1, kmin:kmax+1].mean() * 1.5):
+            if img[currentPoint] < (img[imin:imax+1, jmin:jmax+1, kmin:kmax+1].mean() * (sensitivity/100)):
             # if img[currentPoint] == 255:
                 # Include the voxel in the segmentation and
                 # add its neighbors to be checked.
