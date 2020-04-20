@@ -1,7 +1,7 @@
 from liverDataUtils.regionGrowing import RegionGrowing
 import numpy as np
 from scipy.ndimage import gaussian_filter
-from skimage.filters import threshold_otsu, median
+from skimage.filters import threshold_otsu, median, gabor
 
 def normalize(value, maxValue, minValue):
     return 255*(value-minValue)/(maxValue - minValue)
@@ -37,3 +37,13 @@ def otsuThreshold(dataCube):
     print(f"Thres: {thres}")
 
     return dataCube < thres
+
+def gaborFilter(dataCube, frequency=0.6):
+    dataCube = np.array(dataCube)
+    filtered = np.zeros(dataCube.shape)
+
+    for index in np.arange(0, dataCube.shape[2], 1):
+        filtered[:,:,index], _ = gabor(dataCube[:,:,index], frequency=frequency)
+        # filtered[:,:,index] = gabor(dataCube[:,:,index])
+
+    return filtered

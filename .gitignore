@@ -361,3 +361,6 @@ MigrationBackup/
 # Data path
 data/
 
+# Files that are too big >100MB
+src/results/gabor/gaborFeatureVector_n4_FrequencyTheaBandwith.nrrd
+src/results/gabor/gaborFeatureVector_FrequencyTheaBandwith.nrrd

@@ -7,6 +7,9 @@ experiments:
 experiments2:
 	python -m experiments2
 
+experiments3:
+	python -m experiments3
+
 rgi:
 	python -m liverDataUtils.regularGridInterpolator
 
