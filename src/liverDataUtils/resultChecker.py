@@ -4,8 +4,7 @@ from liverDataUtils.liverReader import LiverReader
 import time 
 import matplotlib.pyplot as plt
 
-
-def checkVascular(img, sampleNumber):
+def checkVascular(img, sampleNumber, sliceNumber):
     # init
     liverReader = LiverReader()
     start_time = time.time()
@@ -15,24 +14,32 @@ def checkVascular(img, sampleNumber):
     liverFilePath = f"results/base/LIVER_roiLiver{sampleNumber}.nrrd"
     template = liverReader.readNrrdData(liverVascularFilePath)/255
     liverRoi = liverReader.readNrrdData(liverFilePath)/255
-    template = template[..., 56]
-    liverRoi = liverRoi[..., 56]
-    
+    template = template[..., sliceNumber]
+    liverRoi = liverRoi[..., sliceNumber]
+
     # compare each class from given pic with template
-    minClassValue = img.min()
-    maxClassValue = img.max() + 1
+    minClassValue = img.min().astype(int)
+    maxClassValue = img.max().astype(int) + 1
     classes = np.arange(minClassValue, maxClassValue, 1)
+    results = np.empty((classes.size, 2))
+    incorrectPixelsForClasses = np.empty((img.shape[0], img.shape[1], classes.size))
 
     for classNo in classes:
         classImage = img == classNo
         correctPixels = 0
         for (i,j), value in np.ndenumerate(classImage):
+            if (value != template[i,j]):
+                incorrectPixelsForClasses[i,j,classNo] = 1
             if (value == template[i,j] and template[i,j] == 1):
                 correctPixels += 1
         pixelsCount = np.count_nonzero(template)
+        percentCorrect = correctPixels*100/pixelsCount
+        results[classNo] = (classNo, percentCorrect)
         print(f"CLASS {classNo}: {correctPixels} out of {pixelsCount} are correct ({correctPixels*100/pixelsCount}%)")
     
-    # return matrix containing percentage accordance with the template for each class
+    # return tuple of matrix containing percentage accordance with the template for each class
     # format: [classNo, percentage]
-
+    # and a matrix of incorrect pixels for each class 
     print("------ Execution time: %s seconds ------" % (time.time() - start_time))
+
+    return (results, incorrectPixelsForClasses)

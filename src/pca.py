@@ -21,11 +21,11 @@ featureVectorPathLbp = "results/localBinaryPattern/radius_nPoints_method_noVar.n
 
 featureVectorsGabor = liverReader.readNrrdData(featureVectorPath)
 featureVectorsLbp = liverReader.readNrrdData(featureVectorPathLbp)
-featureVectors = np.concatenate((featureVectorsGabor, featureVectorsLbp[...,1:]), axis=2)
+# featureVectors = np.concatenate((featureVectorsGabor, featureVectorsLbp[...,1:]), axis=2)
 
-print(featureVectors.shape)
+print(featureVectorsGabor.shape)
 # get data in proper format (proper dimensions)
-data = featureVectorsLbp.reshape(-1, featureVectorsLbp.shape[2])
+data = featureVectorsGabor.reshape(-1, featureVectorsGabor.shape[2])
 print(data.shape)
 
 # pca (data is automatically centered but not scaled)
@@ -37,7 +37,7 @@ print(reducedData.shape)
 kmeans = KMeans(n_clusters=4)
 labels = kmeans.fit_predict(reducedData)
 
-labelsImg = labels.reshape((featureVectors.shape[0], featureVectors.shape[1]))
+labelsImg = labels.reshape((featureVectorsGabor.shape[0], featureVectorsGabor.shape[1]))
 
 
 # Scree plot
@@ -54,6 +54,6 @@ plt.show()
 checkVascular(labelsImg, "16")
 print("------ Execution time: %s seconds ------" % (time.time() - start_time))
 
-Plotter(featureVectors[..., 0], labelsImg)
+Plotter(featureVectorsGabor[..., 0], labelsImg)
 
 # # nrrd.write("results/kmeans/liver16_singleSlice_featureVectors_gabor_pca.nrrd", labelsImg)
