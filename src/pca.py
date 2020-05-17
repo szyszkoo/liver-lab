@@ -51,7 +51,7 @@ plt.title('Scree Plot')
 plt.show()
 
 # img = reducedData.reshape((featureVectors.shape[0], featureVectors.shape[1]))
-checkVascular(labelsImg, "16")
+# checkVascular(labelsImg, "16")
 print("------ Execution time: %s seconds ------" % (time.time() - start_time))
 
 Plotter(featureVectorsGabor[..., 0], labelsImg)

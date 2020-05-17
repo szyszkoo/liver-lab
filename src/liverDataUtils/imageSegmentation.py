@@ -18,6 +18,16 @@ def regionGrowingWithUnsharpMasking(dataCube, seed, sensitivity, neighbourhood, 
 
     return regionMask
 
+def unsharpMasking(dataCube, gaussSigma):
+    # Gaussian blur
+    liverDataGauss = gaussian_filter(dataCube, sigma=gaussSigma)
+    # unsharp masking
+    origMinusBlurred = dataCube - liverDataGauss
+    unsharpened = dataCube + origMinusBlurred * 1.5
+    # unsharpenedNorm = np.array([normalize(x, maxValue, minValue) for x in unsharpened]) * roi
+
+    return unsharpened
+
 def regionGrowing(dataCube, seed, sensitivity, neighbourhood):
     regionGrowing = RegionGrowing()
     regionMask = regionGrowing.grow(dataCube, seed, sensitivity, neighbourhood) # make sure to use a proper condition inside 'grow' method

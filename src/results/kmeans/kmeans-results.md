@@ -11,8 +11,4 @@
 |            LBP -> PCA            |                           44                          |
 |  N4 -> Gabor -> varianceThr1.0   |                           62                          |
 |  N4 -> Gabor -> MinMax -> varianceThr1.0   |                           62                          |
-|  kmeans on ROI only (3 classes)   |                           72                          |
-|  kmeans on ROI only (4 classes)   |                           72                          |
-|  kmeans on ROI only (5 classes)   |                           72                          |
-|  kmeans on ROI only (6 classes)   |                           72                          |
-|  kmeans on ROI only (7 classes)   |                           72                          |
+

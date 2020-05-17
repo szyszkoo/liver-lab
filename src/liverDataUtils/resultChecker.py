@@ -4,6 +4,19 @@ from liverDataUtils.liverReader import LiverReader
 import time 
 import matplotlib.pyplot as plt
 
+def getClustersMeans(labelsImg, originalImg):
+    minClassValue = labelsImg.min().astype(int)
+    maxClassValue = labelsImg.max().astype(int) + 1
+    classes = np.arange(minClassValue, maxClassValue, 1)
+    results = np.empty((classes.size), dtype=object)
+
+    for classNo in classes:
+        classImage = labelsImg == classNo
+        origImgInsideClass = np.multiply(originalImg, classImage)
+        results[classNo] = (classNo, (origImgInsideClass[origImgInsideClass != 0]).mean())
+
+    return results
+
 def checkVascular(img, sampleNumber, sliceNumber):
     # init
     liverReader = LiverReader()
@@ -11,11 +24,11 @@ def checkVascular(img, sampleNumber, sliceNumber):
 
     # get template (original, correct ROI for vascular part)
     liverVascularFilePath = f"results/base/VASCULAR_roiLiver{sampleNumber}.nrrd"
-    liverFilePath = f"results/base/LIVER_roiLiver{sampleNumber}.nrrd"
+    # liverFilePath = f"results/base/LIVER_roiLiver{sampleNumber}.nrrd"
     template = liverReader.readNrrdData(liverVascularFilePath)/255
-    liverRoi = liverReader.readNrrdData(liverFilePath)/255
+    # liverRoi = liverReader.readNrrdData(liverFilePath)/255
     template = template[..., sliceNumber]
-    liverRoi = liverRoi[..., sliceNumber]
+    # liverRoi = liverRoi[..., sliceNumber]
 
     # compare each class from given pic with template
     minClassValue = img.min().astype(int)

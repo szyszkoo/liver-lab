@@ -19,7 +19,7 @@ from scipy.stats import zscore
 liverReader = LiverReader()
 start_time = time.time()
 sampleNumber = "18"
-sliceNumber = 44
+sliceNumber = 47
 
 # # # ===================== feature vectors ============================
 # # read liver data
@@ -88,7 +88,7 @@ img = n4BiasFieldCorrection3D(img)
 imgFlattened = img.reshape(-1,1)
 
 # kmeans
-kmeans = KMeans(n_clusters=4)
+kmeans = KMeans(n_clusters=3)
 labels = kmeans.fit_predict(imgFlattened)
 
 # # spectral clustering

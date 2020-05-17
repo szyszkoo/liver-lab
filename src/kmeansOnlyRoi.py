@@ -7,7 +7,7 @@ import time
 import numpy as np
 import nrrd
 from liverDataUtils.n4BiasFieldCorretion import n4BiasFieldCorrection3D
-from liverDataUtils.resultChecker import checkVascular
+from liverDataUtils.resultChecker import checkVascular, getClustersMeans
 from scipy.ndimage.filters import gaussian_filter
 from distutils.version import LooseVersion
 import skimage
@@ -18,8 +18,8 @@ from scipy.stats import zscore
 # init
 liverReader = LiverReader()
 start_time = time.time()
-sampleNumber = "18" # 16
-sliceNumber = 47 # 56
+sampleNumber = "18" # 16/ 18
+sliceNumber = 47 # 56 / 47
 
 # # # ===================== feature vectors ============================
 # # read liver data
@@ -101,8 +101,16 @@ for clusters in np.arange(3, 9, 1):
     for index, (i, j) in np.ndenumerate(roiPixelsIndices):
         labelsImg[i,j] = labels[index] 
 
-    (results, incorrectPixels) = checkVascular(labelsImg, sampleNumber, sliceNumber)
-    Plotter(template, labelsImg)
+
+    clusterMeans = getClustersMeans(labelsImg, img)
+    # (results, incorrectPixels) = checkVascular(labelsImg, sampleNumber, sliceNumber)
+    print(clusterMeans)
+    sortedByCluseterMean = sorted(clusterMeans, key=lambda labelNoMeanPair: labelNoMeanPair[1])
+    newLabels = np.empty_like(labelsImg)
+
+    for index, (labelNo, mean) in enumerate(sortedByCluseterMean):
+        newLabels[labelsImg == labelNo] = index
+    Plotter(img, newLabels)
 
 print("------ Execution time: %s seconds ------" % (time.time() - start_time))
 
