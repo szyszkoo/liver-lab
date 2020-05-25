@@ -7,53 +7,21 @@ import time
 import numpy as np
 import nrrd
 from liverDataUtils.n4BiasFieldCorretion import n4BiasFieldCorrection3D
-from liverDataUtils.resultChecker import checkVascular, getClustersMeans
+from liverDataUtils.resultChecker import checkVascular, getClustersMeans, checkVascularDiceMethod, getFirstClasses
 from scipy.ndimage.filters import gaussian_filter
 from distutils.version import LooseVersion
 import skimage
 from skimage.transform import rescale
 from sklearn.preprocessing import MinMaxScaler
 from scipy.stats import zscore
+import matplotlib.pyplot as plt
+from itertools import permutations
 
 # init
 liverReader = LiverReader()
 start_time = time.time()
-sampleNumber = "18" # 16/ 18
-sliceNumber = 47 # 56 / 47
-
-# # # ===================== feature vectors ============================
-# # read liver data
-# featureVectorPath = "results/gabor/gaborFeatureVector_n4_FrequencyTheaBandwith.nrrd"
-# featureVectorPathLbp = "results/localBinaryPattern/radius_nPoints_method_noVar.nrrd"
-
-# featureVectors = liverReader.readNrrdData(featureVectorPath)
-# print(featureVectors.shape)
-
-# # get data in proper format (proper dimensions)
-# data = featureVectors.reshape(-1, featureVectors.shape[2])
-# print(data.shape)
-
-# # min max scale
-# scaler = MinMaxScaler()
-# imgScaledMinMax = scaler.fit_transform(data) 
-# print(f"img scaled shape: {imgScaledMinMax.shape}")
-
-# # variance elimination
-# selector = VarianceThreshold(threshold=1.0)
-# data = selector.fit_transform(data)
-# print(f"Img variance thres shape: {data.shape}")
-
-# # kmeans
-# kmeans = KMeans(n_clusters=4)
-# labels = kmeans.fit_predict(data)
-
-# labelsImg = labels.reshape((featureVectors.shape[0], featureVectors.shape[1]))
-# checkVascular(labelsImg, "16")
-
-# print("------ Execution time: %s seconds ------" % (time.time() - start_time))
-
-# Plotter(featureVectors[..., 0], labelsImg)
-
+sampleNumber = "16" # 16/ 18
+sliceNumber = 56 # 56 / 47
 
 # ===================== single slice ===============================
 # read liver data
@@ -89,9 +57,13 @@ liverVascularFilePath = f"results/base/VASCULAR_roiLiver{sampleNumber}.nrrd"
 template = liverReader.readNrrdData(liverVascularFilePath)/255
 template = template[..., sliceNumber]
 
-for clusters in np.arange(3, 9, 1):
-    print()
-    print(f"******* {clusters} clusters *******")
+numberOfClassesStart = 3
+numberOfClassesEnd = 20
+diceResults = []
+
+for clusters in np.arange(numberOfClassesStart, numberOfClassesEnd + 1, 1):
+    print(f"{clusters}/{numberOfClassesEnd}")
+    # print(f"```````````````````````````````````````` {clusters} clusters ``````````````````````````````````````````")
     # kmeans
     kmeans = KMeans(n_clusters=clusters)
     labels = kmeans.fit_predict(roiPixelValues)
@@ -101,18 +73,39 @@ for clusters in np.arange(3, 9, 1):
     for index, (i, j) in np.ndenumerate(roiPixelsIndices):
         labelsImg[i,j] = labels[index] 
 
-
+    # assign new labels for the classes, based on class values mean
     clusterMeans = getClustersMeans(labelsImg, img)
-    # (results, incorrectPixels) = checkVascular(labelsImg, sampleNumber, sliceNumber)
-    print(clusterMeans)
     sortedByCluseterMean = sorted(clusterMeans, key=lambda labelNoMeanPair: labelNoMeanPair[1])
-    newLabels = np.empty_like(labelsImg)
+    newLabels = np.zeros_like(labelsImg)
 
     for index, (labelNo, mean) in enumerate(sortedByCluseterMean):
         newLabels[labelsImg == labelNo] = index
-    Plotter(img, newLabels)
+    
+    # evaluation
+    # join first n-1 classes together and evaluate the Dice coefficient (n - number of clusters in kmeans)
+    # i.e. join classes: (0), (0,1), ..., (0,1, ..., n-1)
+    for classNo in np.arange(1, clusters):
+        # print()
+        # print(f"************* Joined first {classNo} cluster(s) *************")
+        
+        vascular = getFirstClasses(classNo, newLabels)
+        vascular = np.multiply(vascular, liverRoi[...,sliceNumber])
+        result = checkVascularDiceMethod(vascular, sampleNumber, sliceNumber)
+        # Plotter(template, vascular)
+        if(result[1,1] > 0.6):
+            diceResults.append([(clusters, classNo), result[1,1]])
 
+    # vascular = getCustomClasses(4, newLabels)
+    # checkVascular(vascular, sampleNumber, sliceNumber)
+
+# print(diceResults)
+values = [x[1] for x in diceResults]
+labels = [','.join(map(str, x[0])) for x in diceResults]
+test = sorted(diceResults, key=lambda labelValuePair: labelValuePair[1], reverse=True)[0]
+print(f"Max value: {test}")
 print("------ Execution time: %s seconds ------" % (time.time() - start_time))
 
+plt.bar(labels, values)
+plt.show()
 # Plotter(img, labelsImg)
 # Plotter(incorrectPixels, incorrectPixels)
