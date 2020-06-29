@@ -36,7 +36,7 @@ for index, singleTuple in enumerate(liverDataSorted):
     liverDataCube[:,:,index] = singleTuple[1]
 
 # TODO: uncomment the line below in order to save the liver data to the nrrd file
-nrrd.write("results/base/" + fileNames.getLiverCubeFileName(sampleNumber), liverDataCube)
+# nrrd.write("results/base/" + fileNames.getLiverCubeFileName(sampleNumber), liverDataCube)
 
 # RT file (ROI)
 if rtFileName == "":
@@ -96,4 +96,4 @@ for structure in dicom_RT_seq:
                     roi_mask[:, :, int(iteindex)] = np.ma.mask_or(roi_mask[:, :, int(iteindex)], mask.reshape(height, width))
                 
     # TODO: Create ROI nrrd file (uncomment the line below)
-    nrrd.write(f"results/base/{structure.ROIName}_{fileNames.getRoiCubeFileName(sampleNumber)}", roi_mask.astype(int)*255)
+    # nrrd.write(f"results/base/{structure.ROIName}_{fileNames.getRoiCubeFileName(sampleNumber)}", roi_mask.astype(int)*255)

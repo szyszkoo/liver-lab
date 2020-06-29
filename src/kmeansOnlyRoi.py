@@ -3,11 +3,12 @@ from sklearn.feature_extraction import image
 from sklearn.feature_selection import VarianceThreshold
 from liverDataUtils.liverReader import LiverReader
 from liverDataUtils.plotter import Plotter
+from liverDataUtils.barPlotter import showPercentageBarPlot
 import time
 import numpy as np
 import nrrd
 from liverDataUtils.n4BiasFieldCorretion import n4BiasFieldCorrection3D
-from liverDataUtils.resultChecker import checkVascular, getClustersMeans, checkVascularDiceMethod, getFirstClasses
+from liverDataUtils.resultChecker import checkVascular, getClustersMeans, checkVascularDiceMethod, getCustomClasses
 from scipy.ndimage.filters import gaussian_filter
 from distutils.version import LooseVersion
 import skimage
@@ -15,7 +16,9 @@ from skimage.transform import rescale
 from sklearn.preprocessing import MinMaxScaler
 from scipy.stats import zscore
 import matplotlib.pyplot as plt
-from itertools import permutations
+from skimage.morphology import binary_closing, binary_opening
+from itertools import permutations, combinations
+from scipy.ndimage import binary_erosion
 
 # init
 liverReader = LiverReader()
@@ -26,7 +29,7 @@ sliceNumber = 56 # 56 / 47
 # ===================== single slice ===============================
 # read liver data
 liverWholeDataFilePath = f"results/base/liverCube{sampleNumber}.nrrd"
-liverRoiFilePath = f"results/base/LIVER_roiLiver{sampleNumber}.nrrd"
+liverRoiFilePath = f"results/base/roiLiver{sampleNumber}.nrrd"
 
 liverRoi = liverReader.readNrrdData(liverRoiFilePath)/255
 liverWholeData = liverReader.readNrrdData(liverWholeDataFilePath)
@@ -56,10 +59,15 @@ roiPixelValues = roiPixelValues.reshape(-1,1)
 liverVascularFilePath = f"results/base/VASCULAR_roiLiver{sampleNumber}.nrrd"
 template = liverReader.readNrrdData(liverVascularFilePath)/255
 template = template[..., sliceNumber]
+liverRoi = liverRoi[..., sliceNumber]
+liverRoiPrev = liverRoi
+liverRoi = binary_erosion(binary_erosion(binary_erosion(liverRoi)))
+# print(np.count_nonzero(liverRoiPrev - liverRoi))
+# Plotter(liverRoiPrev-liverRoi, liverRoi)
 
 numberOfClassesStart = 3
-numberOfClassesEnd = 20
-diceResults = []
+numberOfClassesEnd = 6
+allResults = []
 
 for clusters in np.arange(numberOfClassesStart, numberOfClassesEnd + 1, 1):
     print(f"{clusters}/{numberOfClassesEnd}")
@@ -87,25 +95,58 @@ for clusters in np.arange(numberOfClassesStart, numberOfClassesEnd + 1, 1):
     for classNo in np.arange(1, clusters):
         # print()
         # print(f"************* Joined first {classNo} cluster(s) *************")
-        
-        vascular = getFirstClasses(classNo, newLabels)
-        vascular = np.multiply(vascular, liverRoi[...,sliceNumber])
-        result = checkVascularDiceMethod(vascular, sampleNumber, sliceNumber)
-        # Plotter(template, vascular)
-        if(result[1,1] > 0.6):
-            diceResults.append([(clusters, classNo), result[1,1]])
+        classPermutations = combinations(range(clusters), int(classNo))
+        for classesToJoin in classPermutations:
+            vascular = getCustomClasses(classesToJoin, newLabels)
+            vascular = np.multiply(vascular, liverRoi)
+            result = checkVascularDiceMethod(vascular, liverRoi, template)
+            # print(result)
+            # print(result[1,1])
+            # print(result[1,1,1,1])
+            label = f"{str(clusters)}_{','.join(map(str, classesToJoin))}"
 
-    # vascular = getCustomClasses(4, newLabels)
-    # checkVascular(vascular, sampleNumber, sliceNumber)
+            # diff = template - vascular
+            # pixelsInTemplate = np.count_nonzero((template > 0) & (liverRoi > 0))
+            # pixelsInClass = np.count_nonzero((vascular > 0) & (liverRoi > 0))
+            # falseNegative = np.count_nonzero(diff == 1)/ (pixelsInClass + pixelsInTemplate)
+            # falsePositive = np.count_nonzero(diff == -1)/ (pixelsInClass + pixelsInTemplate)
+
+            if(result[1,1] > 0.6):
+                nrrd.write(f"results/kmeans/{label}.nrrd", vascular.astype(int)*255)
+
+                # closed = binary_closing(vascular)
+                # print(f"Closed | " + str(checkVascularDiceMethod(closed, liverRoi, template)[1,1]) + " | before | " + str(result[1,1]))
+                allResults.append([label, result[1,1], result[1,2], result[1,3]])
+
 
 # print(diceResults)
-values = [x[1] for x in diceResults]
-labels = [','.join(map(str, x[0])) for x in diceResults]
-test = sorted(diceResults, key=lambda labelValuePair: labelValuePair[1], reverse=True)[0]
-print(f"Max value: {test}")
+# values = [x[1] for x in diceResults]
+# # labels = [','.join(map(str, x[0])) for x in diceResults]
+# test = sorted(diceResults, key=lambda labelValuePair: labelValuePair[1], reverse=True)[0]
+# print(f"Max value: {test}")
 print("------ Execution time: %s seconds ------" % (time.time() - start_time))
 
-plt.bar(labels, values)
-plt.show()
+# plt.bar(labels, values)
+# plt.show()
+
+# fig, ax = plt.subplots()
+
+allResults = sorted(allResults, key=lambda x: x[1], reverse=True)
+
+labels = [x[0] for x in allResults]
+dices = [x[1] for x in allResults]
+fn = [x[2] for x in allResults]
+fp = [x[3] for x in allResults]
+
+print(f"Max value of dice coefficient: {max(dices)}")
+
+showPercentageBarPlot(labels, dices, fp, fn, 'Wynik badania algorytmu k-means')
+# ax.bar(labels, dices, label='Dice coefficient')
+# ax.bar(labels, fn, bottom=dices, label='False negative')
+# ax.bar(labels, fp, bottom=np.array(fn) + np.array(dices), label='False positive')
+# ax.legend()
+# ax.set_title('Wynik badania algorytmu k-means')
+# plt.show()
+
 # Plotter(img, labelsImg)
 # Plotter(incorrectPixels, incorrectPixels)

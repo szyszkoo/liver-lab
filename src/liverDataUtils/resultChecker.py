@@ -59,24 +59,24 @@ def checkVascular(img, sampleNumber, sliceNumber):
 
     return (results, incorrectPixelsForClasses)
 
-def checkVascularDiceMethod(img, sampleNumber, sliceNumber):
+def checkVascularDiceMethod(img, roi, template):
     # init
-    liverReader = LiverReader()
+    # liverReader = LiverReader()
     # print("=========== Dice method check ============")
 
     # get template (original, correct ROI for vascular part)
-    liverVascularFilePath = f"results/base/VASCULAR_roiLiver{sampleNumber}.nrrd"
-    liverFilePath = f"results/base/LIVER_roiLiver{sampleNumber}.nrrd"
-    template = liverReader.readNrrdData(liverVascularFilePath)/255
-    liverRoi = liverReader.readNrrdData(liverFilePath)/255
-    template = template[..., sliceNumber]
-    liverRoi = liverRoi[..., sliceNumber]
+    # liverVascularFilePath = f"results/base/VASCULAR_roiLiver{sampleNumber}.nrrd"
+    # liverFilePath = f"results/base/LIVER_roiLiver{sampleNumber}.nrrd"
+    # template = liverReader.readNrrdData(liverVascularFilePath)/255
+    # liverRoi = liverReader.readNrrdData(liverFilePath)/255
+    # template = template[..., sliceNumber]
+    # liverRoi = liverRoi[..., sliceNumber]
 
     # compare each class from given pic with template
     minClassValue = img.min().astype(int)
     maxClassValue = img.max().astype(int) + 1
     classes = np.arange(minClassValue, maxClassValue, 1)
-    results = np.empty((classes.size, 2))
+    results = np.empty((classes.size, 4))
 
     for classNo in classes:
         classImage = img == classNo
@@ -84,19 +84,25 @@ def checkVascularDiceMethod(img, sampleNumber, sliceNumber):
         # print(np.count_nonzero((classImage == template) & (liverRoi > 0 )))
         # print(np.count_nonzero(liverRoi > 0))
         # diceCoefficient = (2 * np.count_nonzero((classImage == template) & (liverRoi > 0 )))/((np.count_nonzero((classImage[classImage == 1]) & (liverRoi > 0))) + (np.count_nonzero(template[template == 1]) & (liverRoi > 0)))
-        correctPixels = np.count_nonzero((classImage == template) & (liverRoi > 0 ) & (classImage == 1))
-        pixelsInTemplate = np.count_nonzero((template > 0) & (liverRoi > 0))
-        pixelsInClass = np.count_nonzero((classImage > 0) & (liverRoi > 0))
+        correctPixels = np.count_nonzero((classImage == template) & (roi > 0 ) & (classImage == 1))
+        pixelsInTemplate = np.count_nonzero((template > 0) & (roi > 0))
+        pixelsInClass = np.count_nonzero((classImage > 0) & (roi > 0))
         diceCoefficient = 2*correctPixels / (pixelsInClass + pixelsInTemplate)
+
+        diff = template - img
+        falseNegative = np.count_nonzero(diff == 1)/ (pixelsInClass + pixelsInTemplate)
+        falsePositive = np.count_nonzero(diff == -1)/ (pixelsInClass + pixelsInTemplate)
         # diceCoefficient = (np.count_nonzero((classImage == template) & (liverRoi > 0 )))/np.count_nonzero(liverRoi > 0 )
         # print(diceCoefficient)
-        results[classNo] = (classNo, diceCoefficient)
+
+
+        results[classNo] = (classNo, diceCoefficient, falseNegative, falsePositive)
         # print(f"Dice coefficient for class no {classNo}: {diceCoefficient}")
 
     return results
 
-def getFirstClasses(numberOfClasses, labelsImg):
-    classesToGet = np.arange(numberOfClasses)
+def getCustomClasses(classesToGet, labelsImg):
+    # classesToGet = np.arange(numberOfClasses)
     output = np.zeros_like(labelsImg)
     for classNo in classesToGet:
         for (i,j), value in np.ndenumerate(labelsImg):

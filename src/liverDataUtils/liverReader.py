@@ -8,17 +8,24 @@ from liverDataUtils.fileNames import FileNames
 class LiverReader:
     def readLiverData(self, sampleNumber):
         fileNames = FileNames()
-        liverData, _ = nrrd.read(fileNames.getLiverCubeFileName(sampleNumber))
-        roiData, _ =  nrrd.read(fileNames.getRoiCubeFileName(sampleNumber))
+        liverData, _ = nrrd.read("results/base/" + fileNames.getLiverCubeFileName(sampleNumber))
+        roiData, _ =  nrrd.read("results/base/" + fileNames.getRoiCubeFileName(sampleNumber))
         roiData = roiData/255
 
         return np.multiply(liverData, roiData)
 
     def readWholeLiverData(self, sampleNumber):
         fileNames = FileNames()
-        liverData, _ = nrrd.read(fileNames.getLiverCubeFileName(sampleNumber))
+        liverData, _ = nrrd.read("results/base/" + fileNames.getLiverCubeFileName(sampleNumber))
 
         return liverData
+
+    def readLiverROIData(self, sampleNumber):
+        fileNames = FileNames()
+        roiData, _ =  nrrd.read("results/base/" + fileNames.getRoiCubeFileName(sampleNumber))
+        roiData = roiData/255
+
+        return roiData
 
     def readInterpolatedLiverData(self, sampleNumber):
         fileNames = FileNames()
@@ -35,13 +42,6 @@ class LiverReader:
     def readInterpolatedRoiData(self, sampleNumber):
         fileNames = FileNames()
         roiData, _ = nrrd.read(fileNames.getInterpolatedRoiFileName(sampleNumber))
-
-        return roiData
-
-    def readLiverROIData(self, sampleNumber):
-        fileNames = FileNames()
-        roiData, _ =  nrrd.read(fileNames.getRoiCubeFileName(sampleNumber))
-        roiData = roiData/255
 
         return roiData
 

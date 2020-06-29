@@ -27,8 +27,9 @@ def writeFrangi2Dand3DToNrrdFiles(sampleNumber, liverData, roiData):
     nrrd.write(filename2D, liverFrangi2D)
     nrrd.write(filename3D, liverFrangi3D)
 
-sampleNumber = "01"
 liverReader = LiverReader()
+
+sampleNumber = "01"
 # liverData = liverReader.readInterpolatedLiverData(sampleNumber)
 # roiData = liverReader.readInterpolatedRoiData(sampleNumber)
 liverData = liverReader.readNrrdData(f"nearest_interpolatedCube{sampleNumber}.nrrd")
@@ -38,7 +39,6 @@ writeFrangi2Dand3DToNrrdFiles(sampleNumber, liverData, roiData)
 
 
 sampleNumber = "02"
-liverReader = LiverReader()
 # liverData = liverReader.readInterpolatedLiverData(sampleNumber)
 # roiData = liverReader.readInterpolatedRoiData(sampleNumber)
 liverData = liverReader.readNrrdData(f"nearest_interpolatedCube{sampleNumber}.nrrd")
@@ -48,7 +48,6 @@ writeFrangi2Dand3DToNrrdFiles(sampleNumber, liverData, roiData)
 
 
 sampleNumber = "03"
-liverReader = LiverReader()
 # liverData = liverReader.readInterpolatedLiverData(sampleNumber)
 # roiData = liverReader.readInterpolatedRoiData(sampleNumber)
 liverData = liverReader.readNrrdData(f"nearest_interpolatedCube{sampleNumber}.nrrd")
@@ -58,7 +57,14 @@ writeFrangi2Dand3DToNrrdFiles(sampleNumber, liverData, roiData)
 
 
 sampleNumber = "15"
-liverReader = LiverReader()
+# liverData = liverReader.readInterpolatedLiverData(sampleNumber)
+# roiData = liverReader.readInterpolatedRoiData(sampleNumber)
+liverData = liverReader.readNrrdData(f"nearest_interpolatedCube{sampleNumber}.nrrd")
+roiData = liverReader.readNrrdData(f"nearest_interpolatedROIData_{sampleNumber}.nrrd")/255
+
+writeFrangi2Dand3DToNrrdFiles(sampleNumber, liverData, roiData)
+
+sampleNumber = "16"
 # liverData = liverReader.readInterpolatedLiverData(sampleNumber)
 # roiData = liverReader.readInterpolatedRoiData(sampleNumber)
 liverData = liverReader.readNrrdData(f"nearest_interpolatedCube{sampleNumber}.nrrd")
